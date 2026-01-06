@@ -1,13 +1,78 @@
-local player = game.Players.LocalPlayer
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/OrionLibrary/Orion/main/source.lua')))()
-local Window = OrionLib:MakeWindow({Name = "XanVerius Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "XanTest"}) --[[ Name =  - The name of the UI. HidePremium =  - Whether or not the user details shows Premium status or not. SaveConfig =  - Toggles the config saving in the UI.
-ConfigFolder =  - The name of the folder where the configs are saved. IntroEnabled = false - Whether or not to show the intro animation. IntroText =  - Text to show in the intro animation. IntroIcon =  - URL to the image you want to use in the intro animation. Icon =  - URL to the image you want displayed on the window. CloseCallback =  - Function to execute when the window is closed.
-]] 
-local Tab = Window:MakeTab({ Name = "Tab 1", Icon = "rbxassetid://4483345998", PremiumOnly = false }) --[[ Name =  - The name of the tab. Icon =  - The icon of the tab. PremiumOnly =  - Makes the tab accessible to Sirus Premium users only. ]] 
-local Section = Tab:AddSection({ Name = "LocalPlayer" }) --[[ Name =  - The name of the section.
-]] 
-OrionLib:MakeNotification({ Name = "Welcome!", Content = "Welcome to my hub!", Image = "rbxassetid://4483345998", Time = 5 }) --[[ Title =  - The title of the notification. Content =  - The content of the notification. Image =  - The icon of the notification. Time =  - The duration of the notfication. ]] 
-Tab:AddButton({ Name = "High Speed", Callback = function() player.Character.Humanoid.WalkSpeed = 500 end }) --[[ Name =  - The name of the button. Callback =  - The function of the button.
-]] 
-Tab:AddButton({ Name = "High Jumppower", Callback = function() player.Character.Humanoid.JumpPower = 100 end }) --[[ Name =  - The name of the button. Callback =  - The function of the button. ]] 
-Tab:AddButton({ Name = "Low Gravity", Callback = function() game.Workspace.Gravity = 10 end }) --[[ Name =  - The name of the button. Callback =  - The function of the button. ]]
+-- XanVerius Hub (Fixed Version)
+
+-- safety: tunggu game siap
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- load OrionLib dengan proteksi
+local success, OrionLib = pcall(function()
+    return loadstring(game:HttpGet(
+        "https://raw.githubusercontent.com/OrionLibrary/Orion/main/source.lua"
+    ))()
+end)
+
+if not success or not OrionLib then
+    warn("❌ OrionLib gagal load")
+    return
+end
+
+-- buat window
+local Window = OrionLib:MakeWindow({
+    Name = "XanVerius Hub",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "XanTest",
+    IntroEnabled = false
+})
+
+-- tab
+local Tab = Window:MakeTab({
+    Name = "Player",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+Tab:AddSection({
+    Name = "LocalPlayer"
+})
+
+-- notification
+OrionLib:MakeNotification({
+    Name = "XanVerius",
+    Content = "Hub Loaded Successfully",
+    Time = 4
+})
+
+-- helper ambil humanoid (ANTI ERROR)
+local function getHumanoid()
+    local char = player.Character or player.CharacterAdded:Wait()
+    return char:WaitForChild("Humanoid")
+end
+
+-- tombol speed
+Tab:AddButton({
+    Name = "High Speed",
+    Callback = function()
+        getHumanoid().WalkSpeed = 50
+    end
+})
+
+-- tombol jump
+Tab:AddButton({
+    Name = "High Jump",
+    Callback = function()
+        getHumanoid().JumpPower = 75
+    end
+})
+
+-- tombol gravity
+Tab:AddButton({
+    Name = "Low Gravity",
+    Callback = function()
+        workspace.Gravity = 50
+    end
+})
