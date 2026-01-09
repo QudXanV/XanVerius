@@ -1,78 +1,86 @@
--- XanVerius Hub (Fixed Version)
-
--- safety: tunggu game siap
-if not game:IsLoaded() then
-    game.Loaded:Wait()
-end
-
+-- XanVerius Hub | Minimal & Smooth UI
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- load OrionLib dengan proteksi
-local success, OrionLib = pcall(function()
-    return loadstring(game:HttpGet(
-        "https://raw.githubusercontent.com/OrionLibrary/Orion/main/source.lua"
-    ))()
-end)
+-- Load Rayfield UI
+local Rayfield = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/shlexware/Rayfield/main/source"
+))()
 
-if not success or not OrionLib then
-    warn("❌ OrionLib gagal load")
-    return
-end
-
--- buat window
-local Window = OrionLib:MakeWindow({
+-- Create Window
+local Window = Rayfield:CreateWindow({
     Name = "XanVerius Hub",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "XanTest",
-    IntroEnabled = false
+    LoadingTitle = "XanVerius",
+    LoadingSubtitle = "Smooth • Minimal • Clean",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "XanVerius",
+        FileName = "MainConfig"
+    },
+    KeySystem = false
 })
 
--- tab
-local Tab = Window:MakeTab({
-    Name = "Player",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+-- Tab
+local PlayerTab = Window:CreateTab("Player", 4483345998)
+local PlayerSection = PlayerTab:CreateSection("Movement")
 
-Tab:AddSection({
-    Name = "LocalPlayer"
-})
-
--- notification
-OrionLib:MakeNotification({
-    Name = "XanVerius",
-    Content = "Hub Loaded Successfully",
-    Time = 4
-})
-
--- helper ambil humanoid (ANTI ERROR)
+-- Helper
 local function getHumanoid()
     local char = player.Character or player.CharacterAdded:Wait()
     return char:WaitForChild("Humanoid")
 end
 
--- tombol speed
-Tab:AddButton({
-    Name = "High Speed",
-    Callback = function()
-        getHumanoid().WalkSpeed = 50
+-- WalkSpeed Slider
+PlayerTab:CreateSlider({
+    Name = "WalkSpeed",
+    Range = {16, 100},
+    Increment = 1,
+    Suffix = "Speed",
+    CurrentValue = 16,
+    Callback = function(Value)
+        getHumanoid().WalkSpeed = Value
     end
 })
 
--- tombol jump
-Tab:AddButton({
-    Name = "High Jump",
-    Callback = function()
-        getHumanoid().JumpPower = 75
+-- JumpPower Slider
+PlayerTab:CreateSlider({
+    Name = "JumpPower",
+    Range = {50, 150},
+    Increment = 5,
+    Suffix = "Jump",
+    CurrentValue = 50,
+    Callback = function(Value)
+        getHumanoid().JumpPower = Value
     end
 })
 
--- tombol gravity
-Tab:AddButton({
+-- Gravity Toggle
+PlayerTab:CreateToggle({
     Name = "Low Gravity",
-    Callback = function()
-        workspace.Gravity = 50
+    CurrentValue = false,
+    Callback = function(Value)
+        if Value then
+            workspace.Gravity = 50
+        else
+            workspace.Gravity = 196.2
+        end
     end
+})
+
+-- Reset Button
+PlayerTab:CreateButton({
+    Name = "Reset Player Stats",
+    Callback = function()
+        local hum = getHumanoid()
+        hum.WalkSpeed = 16
+        hum.JumpPower = 50
+        workspace.Gravity = 196.2
+    end
+})
+
+-- Notify
+Rayfield:Notify({
+    Title = "XanVerius Hub",
+    Content = "Loaded Successfully",
+    Duration = 4
 })
